@@ -4,6 +4,7 @@ const average = (arr) => {
   return arr.reduce((acc, cur) => (acc += cur), 0) / arr.length;
 };
 
+console.log("Ex 1");
 console.log(average([1, 2, 3, 4, 5, 6, 7]));
 console.log(average([11, 22, 43, 34, 65, 56, 37]));
 
@@ -16,8 +17,10 @@ const reverseNumberArray = (num) => {
     .reverse()
     .map((digit) => +digit);
 };
+console.log("Ex 2");
 console.log(reverseNumberArray(12345));
 console.log(reverseNumberArray(56789));
+console.log(reverseNumberArray(0));
 
 // 3) დაწერეთ ფუნქცია რომელიც მიიღებს 2 მასივს არგუმენტად და დააბრუნებს მასივის მხოლოდ იმ წევრებს რომელსაც მეორე მასივი არ შეიცავს
 // მაგ: a = [1, 2] და b = [1] დააბრუნეთ [2]. a = [1, 2, 2, 2, 3] და b = [2] დააბრუნეთ [1, 3].
@@ -26,6 +29,7 @@ const returnDifferentNums = (arr1, arr2) => {
   return arr1.filter((item) => !arr2.includes(item));
 };
 
+console.log("Ex 3");
 console.log(returnDifferentNums([1, 2], [1]));
 console.log(returnDifferentNums([1, 2, 2, 2, 3], [2]));
 
@@ -35,7 +39,9 @@ const secondMaxNum = (arr) => {
   return arr.sort((a, b) => b - a)[1];
 };
 
+console.log("Ex 4");
 console.log(secondMaxNum([10, 40, 20, 5, 30]));
+console.log(secondMaxNum([100, 450, 220, 145, 350]));
 
 // 5) დაწერეთ ფუნცქია რომელიც მიიღებს სტირნგების მასივს და უნდა დააბრუნოტ მხოლოდ იმ სიტყვების მასივი რომლებიც არის პალინდორმი:
 // * პალინდორმი ეწოდება სიტყვას რომელიც შემობრუნების შემდეგ იგივე მნიშვნელობას ინარჩუნებს.
@@ -45,7 +51,9 @@ const polindromWords = (arr) => {
   return arr.filter((word) => word === word.split("").reverse().join(""));
 };
 
+console.log("Ex 5");
 console.log(polindromWords(["mom", "car", "level", "dog"]));
+console.log(polindromWords(["notpalindrom", "huh", "wow", "noon"]));
 
 // 6)დაწერეთ ფუნცქია რომელიც მიიღებს რიცხვების მასივს და დააბრუნებთ რომელია ყველაზე ხშირად გამეორებადი რიცხვი მაგ: [4, 5, 6, 5, 4, 5] => 5
 
@@ -63,4 +71,6 @@ const mostOccuredNum = (arr) => {
   })[0];
 };
 
+console.log("Ex 6");
 console.log(mostOccuredNum([4, 5, 6, 5, 4, 5]));
+console.log(mostOccuredNum([4, 5, 6, 12, 16, 4, 4, 6, 8, 5, 4, 5]));
