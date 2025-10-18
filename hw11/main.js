@@ -1,7 +1,35 @@
 // 1) წამოიღეთ ინფომრაცია ამ API-დან  https://jsonplaceholder.typicode.com/users და მირებული შედეგი ჩაწერეთ users.json ში ოღონდ იუზერებს უნდა ქონდეთ მხოლოდ id, name, username და email
 
-// 2) შექმენით phone.js და contacts.json ფაილები, თქვენი მიზანია შექმნათ phone cli თული რომელსაც ქნება დამატება, წაშლა და ყველა კონტაქტის წაკითხვის ფუნცქიონალი. node phone.js add 555151515 nika უნდა დაემატოს ეს ნომერი contacts.json ში. გაითვალისწინეთ დაადოთ ვალიდაცია და თუ ნომერი არსობბს არ დაამატოს იგივე ნომერი. წაშლითაც ნომერს გადასცემთ და ის ნომერი წაშლება contacts.json დან. node phone.js delete 555151515. node phone.js show უნდა გაჩვენოთ ყველა კონტაქტი.
+const fs = require("fs/promises");
+const path = require("path");
 
-// 3) შექმენით car.js და cars.json ფაილები. როდესაც გამოიძახებთ ბრძანებას node car.js Ferrari 2020 red უნდა დაამატოთ ეს მანქანის ინფორმაცია cars.json ში. გაითვალისწინეთ თითოეულ დამატებულ ობიექტს უნდა ჰქონდეს, carName, carColor, carReleaseDate. 5 ჯერ რო გავუშვა ეს ბრძანება 5 ახალი მანქანა უნდა იყოს დამატებული cars.json ში. როდესაც გამოვიძახებ node car.js show 2020 უნდა გამოაჩინოს მხოლოდ 2020 წლის მანქანები, როცა გამოვიძახებ node car.js show red უნდა გამოაჩინოს მხოლოდ წითელი ფერის მანქანები
+const fetchUsers = async () => {
+  const res = await fetch("https://jsonplaceholder.typicode.com/users");
+  const users = await res.json();
+  const mapedUsers = users.map(({ id, name, username, email }) => ({
+    id,
+    name,
+    username,
+    email,
+  }));
+  const filePath = path.join(__dirname, "data/users.json");
+  await fs.writeFile(filePath, JSON.stringify(mapedUsers));
+};
+fetchUsers();
 
 // 4) შექმენით ფაილი random.txt შიგნით დაწერეთ რაიმე წინადადება თქვენი მიზანია დაითვალოთ რამდენი სიტყვა, რამდენი ხმოვანი და რამდენი ასოა ამ ფაილში და ჩაწეროთ შედეგი result.json ში შემდეგი სახით  {word: 20, vowel: 64, chars: 152}
+
+const main = async () => {
+  const filePath = path.join(__dirname, "random.txt");
+  const resultPath = path.join(__dirname, "data/result.json");
+  const text = await fs.readFile(filePath, "utf-8");
+  if (text.trim().length === 0) {
+    return;
+  }
+  const word = text.trim().split(/ +/).length;
+  const vowel = text.match(/[aeiou]/gi).length;
+  const chars = text.replace(/ /g, "").length;
+  await fs.writeFile(resultPath, JSON.stringify({ word, vowel, chars }));
+};
+
+main();
