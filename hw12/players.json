@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "name": "Khvicha Kvaratskhelia",
+    "nation": "Georgia",
+    "age": 23,
+    "club": "Napoli",
+    "position": "Left Winger"
+  },
+  {
+    "id": 2,
+    "name": "Toni Kroos",
+    "nation": "Germany",
+    "age": 34,
+    "club": "Real Madrid",
+    "position": "Midfielder"
+  },
+  {
+    "id": 3,
+    "name": "Lionel Messi",
+    "nation": "Argentina",
+    "age": 37,
+    "club": "Inter Miami",
+    "position": "Forward"
+  },
+  {
+    "id": 4,
+    "name": "Cristiano Ronaldo",
+    "nation": "Portugal",
+    "age": 40,
+    "club": "Al Nassr",
+    "position": "Forward"
+  },
+  {
+    "id": 5,
+    "name": "Jamal Musiala",
+    "nation": "Germany",
+    "age": 22,
+    "club": "Bayern Munich",
+    "position": "Attacking Midfielder"
+  },
+  {
+    "id": 6,
+    "name": "Giorgi Mamardashvili",
+    "nation": "Georgia",
+    "age": 24,
+    "club": "Valencia",
+    "position": "Goalkeeper"
+  },
+  {
+    "id": 7,
+    "name": "Kylian Mbappé",
+    "nation": "France",
+    "age": 26,
+    "club": "Real Madrid",
+    "position": "Forward"
+  },
+  {
+    "id": 8,
+    "name": "Luka Modrić",
+    "nation": "Croatia",
+    "age": 39,
+    "club": "Real Madrid",
+    "position": "Midfielder"
+  },
+  {
+    "id": 9,
+    "name": "Erling Haaland",
+    "nation": "Norway",
+    "age": 25,
+    "club": "Manchester City",
+    "position": "Striker"
+  },
+  {
+    "id": 10,
+    "name": "Otar Kiteishvili",
+    "nation": "Georgia",
+    "age": 29,
+    "club": "Sturm Graz",
+    "position": "Midfielder"
+  }
+]
