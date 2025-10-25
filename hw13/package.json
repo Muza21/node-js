@@ -1,0 +1,20 @@
+{
+  "name": "hw13",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "main.js",
+  "bin": {
+    "todo-cli": "main.js",
+    "weather-cli": "weather.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^14.0.1"
+  }
+}
