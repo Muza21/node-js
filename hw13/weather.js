@@ -33,7 +33,7 @@ program
       console.log(`\nWeather in ${data.name}, ${data.sys.country}`);
       console.log(`Temperature: ${data.main.temp}°C`);
       console.log(`Condition: ${data.weather[0].description}`);
-      console.log(`Wind: ${data.wind.speed} m/s\n`);
+      console.log(`Wind: ${data.wind.speed}\n`);
     } catch (err) {
       console.log("Failed to fetch weather data");
     }
