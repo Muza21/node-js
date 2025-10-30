@@ -68,12 +68,12 @@ app.patch("/expenses/:id", async (req, res) => {
   if (index === -1) {
     return res.status(404).json({ error: true, message: "expense not found" });
   }
-  if (price == null || isNaN(price)) {
+  if (price !== undefined && (isNaN(price) || price == null)) {
     return res
       .status(400)
       .json({ error: true, message: "Invalid price field" });
   }
-  if (!category) {
+  if (category !== undefined && !category.trim()) {
     return res
       .status(400)
       .json({ error: true, message: "Invalid category field" });
