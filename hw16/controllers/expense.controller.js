@@ -1,4 +1,5 @@
 const ExpenseService = require("../services/expense.service");
+const { validateId } = require("../utils");
 
 exports.getExpenses = async (req, res) => {
   const query = req.query;
@@ -14,7 +15,10 @@ exports.postExpense = async (req, res) => {
 };
 
 exports.getExpense = async (req, res) => {
-  const id = Number(req.params.id);
+  const id = req.params.id;
+  if (!validateId(id)) {
+    return res.status(400).json({ error: true, message: "Invalid ID" });
+  }
   const expense = await ExpenseService.getExpense(id);
   if (!expense) {
     return res.status(404).json({ error: true, message: "expense not found" });
@@ -24,7 +28,10 @@ exports.getExpense = async (req, res) => {
 };
 
 exports.updateExpense = async (req, res) => {
-  const id = Number(req.params.id);
+  const id = req.params.id;
+  if (!validateId(id)) {
+    return res.status(400).json({ error: true, message: "Invalid ID" });
+  }
   const { price, category } = req.body;
 
   if (price !== undefined && (isNaN(price) || price == null)) {
@@ -42,14 +49,23 @@ exports.updateExpense = async (req, res) => {
   if (!expense) {
     return res.status(404).json({ error: true, message: "expense not found" });
   }
-  return res.status(200).json("updated succesfully");
+  return res.status(201).json("updated succesfully");
 };
 
 exports.deleteExpense = async (req, res) => {
-  const id = Number(req.params.id);
+  const id = req.params.id;
+  if (!validateId(id)) {
+    return res.status(400).json({ error: true, message: "Invalid ID" });
+  }
   const expense = await ExpenseService.deleteExpense(id);
   if (!expense) {
     return res.status(404).json({ error: true, message: "expense not found" });
   }
   return res.status(200).json({ message: "Deleted successfully" });
+};
+
+exports.getTopFiveExpenses = async (req, res) => {
+  const expenses = await ExpenseService.getTopFiveExpenses();
+
+  return res.status(200).json(expenses);
 };

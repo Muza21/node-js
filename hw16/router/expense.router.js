@@ -8,6 +8,7 @@ const expenseRouter = Router();
 
 expenseRouter.get("/", ExpenseController.getExpenses);
 expenseRouter.post("/", validateExpense, ExpenseController.postExpense);
+expenseRouter.get("/top-5", ExpenseController.getTopFiveExpenses);
 expenseRouter.get("/:id", ExpenseController.getExpense);
 expenseRouter.patch("/:id", ExpenseController.updateExpense);
 expenseRouter.delete("/:id", validateSecret, ExpenseController.deleteExpense);

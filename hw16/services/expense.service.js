@@ -1,61 +1,61 @@
-const { readFile, writeFile } = require("../utils");
+const ExpenseModel = require("../models/expense.model");
 
 exports.getExpenses = async (query) => {
-  const expenses = await readFile("expenses.json", true);
   const page = parseInt(query.page) || 1;
   let take = parseInt(query.take) || 10;
   const UPPER_LIMIT = 20;
   if (take > UPPER_LIMIT) take = UPPER_LIMIT;
-  const start = (page - 1) * take;
+  const skip = (page - 1) * take;
 
-  return expenses.slice(start, start + take);
+  const filter = {};
+  if (query.category) {
+    const categories = query.category.split(",").map((c) => c.trim());
+    filter.category = { $in: categories };
+  }
+
+  if (query.amountFrom || query.amountTo) {
+    filter.price = {};
+    if (query.amountFrom) filter.price.$gte = Number(query.amountFrom);
+    if (query.amountTo) filter.price.$lte = Number(query.amountTo);
+  }
+
+  const expenses = await ExpenseModel.find(filter).skip(skip).limit(take);
+
+  return expenses;
 };
 
 exports.postExpense = async (price, category) => {
-  const expenses = await readFile("expenses.json", true);
-  const lastId = expenses[expenses.length - 1]?.id || 0;
-  const expense = {
-    id: lastId + 1,
-    category,
+  await ExpenseModel.create({
     price,
-    createdAt: new Date().toISOString(),
-  };
-  expenses.push(expense);
-
-  await writeFile("expenses.json", expenses);
+    category,
+  });
 };
 
 exports.getExpense = async (id) => {
-  const expenses = await readFile("expenses.json", true);
-  const expense = expenses.find((e) => e.id === id);
+  const expense = await ExpenseModel.findById(id).exec();
 
   return expense;
 };
 
 exports.updateExpense = async (id, price, category) => {
-  const expenses = await readFile("expenses.json", true);
-  const index = expenses.findIndex((e) => e.id === id);
-  if (index === -1) {
-    return null;
-  }
   const updateReq = {};
-  updateReq["price"] = price;
-  updateReq["category"] = category;
-  expenses[index] = {
-    ...expenses[index],
-    ...updateReq,
-  };
-  await writeFile("expenses.json", expenses);
-  return expenses[index];
+  updateReq.price = price;
+  updateReq.category = category;
+
+  const updatedExpense = await ExpenseModel.findByIdAndUpdate(id, updateReq, {
+    new: true,
+  });
+
+  return updatedExpense;
 };
 
 exports.deleteExpense = async (id) => {
-  const expenses = await readFile("expenses.json", true);
-  const index = expenses.findIndex((e) => e.id === id);
-  if (index === -1) {
-    return null;
-  }
-  const expense = expenses.splice(index, 1)[0];
-  await writeFile("expenses.json", expenses);
-  return expense;
+  const deletedExpense = await ExpenseModel.findByIdAndDelete(id);
+  return deletedExpense;
+};
+
+exports.getTopFiveExpenses = async () => {
+  const expenses = await ExpenseModel.find().sort({ price: -1 }).limit(5);
+
+  return expenses;
 };
