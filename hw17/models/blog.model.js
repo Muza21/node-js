@@ -9,7 +9,7 @@ const blogSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  author: [{ type: Schema.Types.ObjectId, ref: "user", required: true }],
+  author: { type: Schema.Types.ObjectId, ref: "user", required: true },
 });
 
 module.exports = mongoose.model("blog", blogSchema);

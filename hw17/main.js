@@ -32,12 +32,14 @@
 
 const express = require("express");
 const authRouter = require("./router/auth.router");
+const blogRouter = require("./router/blog.router");
 const connectToDB = require("./config/db.config");
 const app = express();
 
 app.use(express.json());
 
 app.use("/", authRouter);
+app.use("/blogs", blogRouter);
 
 connectToDB().then(() => {
   app.listen(3000, () => {

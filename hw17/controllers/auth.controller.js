@@ -17,3 +17,15 @@ exports.login = async (req, res) => {
     return res.status(400).json({ message: err.message });
   }
 };
+
+exports.destroy = async (req, res) => {
+  try {
+    const deletedUser = await AuthService.deleteUser(req.userId);
+    if (!deletedUser) {
+      return res.status(404).json({ message: "user was not found" });
+    }
+    return res.status(200).json({ message: "deleted successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
