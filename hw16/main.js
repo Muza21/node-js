@@ -1,17 +1,13 @@
-// დაამატე შემდეგი ფუნქციონალი წინა ხარჯების დავალებას (დავალება 14):
-
-// 1) შექმენი routes და გააერთიანე ყველა ხარჯი ამ routes-ში. შეგიძლიათ გამოიყენოთ როგორც layer based ასევე featured based არქიტექტურა.
-
-// 2) დაამატე services ფაილი, სადაც დაწერ ყველა ლოგიკას.
-
-// 3) შექმენი middleware და დაამატე ის delete route-ზე — თუ headers-ში აუცილებელი key არ არის მიწოდებული, დააბრუნე ერორი.
-
-// 4) შექმენი middleware, რომელიც დაემატება create expense route-ს და შეამოწმებს, ყველა აუცილებელი ველი გადმოცემულია თუ არა; წინააღმდეგ შემთხვევაში, დააბრუნოს ერორი.
-
-// 5) შექმენი /random-fact route, რომელიც აბრუნებს ნებისმიერ შემთხვევით ფაქტს. დაამატე middleware, რომელიც ამ route-ზე შემთხვევითად ნახევარ მოთხოვნას დაბლოკავს, ხოლო დანარჩენს გაუშვებს. დაბლოკავს იგულისმება რო ერორს დაუბრუნებს რენდომად
+// წინა მე-15 დავალებას დაუმატეთ შემდეგი ფუნცქიონალი:
+// 1) დააკონფიგურირეთ მონგოდიბის ბაზა, გამოიყენეთ .env ფაილი და თქვენი connection string არ გამოაჩინოთ საჯაროდ არსად
+// 2) შექმენით ხარჯების მოდელი
+// 3) დააიმპლემენტირეთ სრულად ქრადის ტიპის ოპერაციები, არ გამოგრჩეთ მონგოს აიდის ვალიდაციის დადება
+// 4) დაამატეთ ახალი ენდფოინტთი /expenses/top-5 რომელიც დაგიბრუნებთ 5 ყველაზე ძვირ ხარჯს
+// 5) დაამატეთ ფილტრის ფუნციონალი მაგალითად თუ დავწერ ხარჯების წამოღებისას /expenses?category=shopping,gym,food&amountFrom=200&amountTo=500 უნდა დააბრუნოს ყველა ის ხარჯი რომელიც არის 200დან 500ლარამდე პლუს რომელთა კატეგორია არის შოპინგი, ვარჯიში და საკვები
 
 const express = require("express");
 const expenseRouter = require("./router/expense.router");
+const connectToDB = require("./config/db.config");
 const randomFactRouter = require("./router/randomFact.router");
 const app = express();
 
@@ -20,6 +16,8 @@ app.use(express.json());
 app.use("/expenses", expenseRouter);
 app.use("/random-fact", randomFactRouter);
 
-app.listen(3000, () => {
-  console.log("server running on http://localhost:3000");
+connectToDB().then(() => {
+  app.listen(3000, () => {
+    console.log("server running on http://localhost:3000");
+  });
 });
