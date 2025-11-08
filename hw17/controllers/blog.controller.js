@@ -23,7 +23,7 @@ exports.show = async (req, res) => {
 
 exports.store = async (req, res) => {
   try {
-    const blogData = { ...req.body, author: [req.userId] };
+    const blogData = { ...req.body, author: req.userId };
     await BlogService.createBlog(blogData);
     return res.status(201).json("created succesfully");
   } catch (err) {
@@ -33,15 +33,19 @@ exports.store = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const id = req.params.id;
     const { title, content } = req.body;
-    const updatedBlog = await BlogService.updateBlog(id, title, content);
+    const updatedBlog = await BlogService.updateBlog(
+      req.params.id,
+      req.userId,
+      title,
+      content
+    );
     if (!updatedBlog) {
       return res.status(404).json({ message: "blog was not found" });
     }
     return res.status(201).json("updated succesfully");
   } catch (err) {
-    return res.status(400).json({ message: err.message });
+    return res.status(err.status || 400).json({ message: err.message });
   }
 };
 
@@ -51,6 +55,6 @@ exports.destroy = async (req, res) => {
     if (!deleted) return res.status(404).json({ message: "Blog not found" });
     return res.status(200).json({ message: "Deleted successfully" });
   } catch (err) {
-    return res.status(400).json({ message: err.message });
+    return res.status(err.status || 400).json({ message: err.message });
   }
 };
