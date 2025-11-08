@@ -1,4 +1,5 @@
 const fs = require("fs/promises");
+const mongoose = require("mongoose");
 
 async function readFile(filePath, isParsed) {
   if (!filePath) return;
@@ -14,4 +15,8 @@ async function writeFile(filePath, data) {
   );
 }
 
-module.exports = { readFile, writeFile };
+function validateId(id) {
+  return mongoose.Types.ObjectId.isValid(id);
+}
+
+module.exports = { readFile, writeFile, validateId };
