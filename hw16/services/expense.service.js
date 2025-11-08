@@ -7,7 +7,19 @@ exports.getExpenses = async (query) => {
   if (take > UPPER_LIMIT) take = UPPER_LIMIT;
   const skip = (page - 1) * take;
 
-  const expenses = await ExpenseModel.find().skip(skip).limit(take);
+  const filter = {};
+  if (query.category) {
+    const categories = query.category.split(",").map((c) => c.trim());
+    filter.category = { $in: categories };
+  }
+
+  if (query.amountFrom || query.amountTo) {
+    filter.price = {};
+    if (query.amountFrom) filter.price.$gte = Number(query.amountFrom);
+    if (query.amountTo) filter.price.$lte = Number(query.amountTo);
+  }
+
+  const expenses = await ExpenseModel.find(filter).skip(skip).limit(take);
 
   return expenses;
 };
