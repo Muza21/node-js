@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create expense</title>
+  </head>
+  <body>
+    <%- include('../partials/header.ejs') %>
+    <main>
+      <a href="/">Back to Home</a>
+      <form action="/api/expenses" method="post">
+        <input
+          type="text"
+          placeholder="Enter expense category"
+          name="category"
+          required
+        />
+        <input
+          type="number"
+          placeholder="Enter expense price"
+          name="price"
+          required
+        />
+
+        <button>Create expense</button>
+      </form>
+    </main>
+    <%- include('../partials/footer.ejs') %>
+  </body>
+</html>

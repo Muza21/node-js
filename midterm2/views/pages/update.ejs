@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense edit</title>
+  </head>
+  <body>
+    <%- include('../partials/header.ejs') %>
+    <main>
+      <h1>Edit page</h1>
+      <a href="/">Back to home</a>
+
+      <form action="/api/expenses/<%= expense.id %>/update" method="post">
+        <input
+          value="<%= expense.category %>"
+          type="text"
+          name="category"
+          placeholder="enter expense category"
+          required
+        />
+        <input
+          value="<%= expense.price %>"
+          type="number"
+          name="price"
+          placeholder="enter expense price"
+          required
+        />
+        <button>Edit expense</button>
+      </form>
+    </main>
+    <%- include('../partials/footer.ejs') %>
+  </body>
+</html>
