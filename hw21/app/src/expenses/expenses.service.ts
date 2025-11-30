@@ -1,18 +1,36 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { UpdateExpenseDto } from './dto/update-expense.dto';
-import { Expense } from './user.interface';
+import { Expense } from './expense.interface';
+import { QueryParamsDTO } from './dto/pagination.dto';
+import { ExpenseQueryDTO } from './dto/expense-query.dto';
 
 @Injectable()
 export class ExpensesService {
   private expenses: Expense[] = [];
 
-  getAllExpenses(): Expense[] {
-    return this.expenses;
+  getAllExpenses(query: ExpenseQueryDTO & QueryParamsDTO) {
+    const { category, priceFrom, priceTo, page = 1, take = 30 } = query;
+
+    let data = [...this.expenses];
+    console.log(category);
+    if (category) data = data.filter((e) => e.category === category);
+    if (priceFrom !== undefined)
+      data = data.filter((e) => e.price >= Number(priceFrom));
+    if (priceTo !== undefined)
+      data = data.filter((e) => e.price <= Number(priceTo));
+    console.log(data, 'data');
+    console.log(take, page);
+    const start = (page - 1) * take;
+    const end = page * take;
+    const pagedData = data.slice(start, end);
+
+    return {
+      page,
+      take,
+      total: data.length,
+      expenses: pagedData,
+    };
   }
 
   getExpenseById(id: number): Expense {
@@ -25,18 +43,11 @@ export class ExpensesService {
 
   createExpense(createExpenseDto: CreateExpenseDto): Expense {
     const lastId = this.expenses[this.expenses.length - 1]?.id || 0;
-    Object.keys(createExpenseDto).forEach((key) => {
-      if (!createExpenseDto[key]) {
-        throw new BadRequestException(`${key} is required`);
-      }
-    });
     const newExpense = {
       id: lastId + 1,
       ...createExpenseDto,
       totalPrice: createExpenseDto.price * createExpenseDto.quantity,
     };
-    console.log(newExpense);
-    console.log('herer');
     this.expenses.push(newExpense);
     return newExpense;
   }

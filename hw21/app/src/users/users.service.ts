@@ -11,8 +11,32 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersService {
   private users: User[] = [];
 
-  getAllUsers(): User[] {
-    return this.users;
+  getAllUsers(query?: { gender?: string; email?: string }): User[] {
+    if (!query || Object.keys(query).length === 0) {
+      return this.users;
+    }
+    const { gender, email } = query;
+    const filteredByGender = gender
+      ? this.users.filter((u) => u.gender === gender)
+      : [];
+
+    const filteredByEmail = email
+      ? this.users.filter((u) =>
+          u.email.toLowerCase().startsWith(email.toLowerCase()),
+        )
+      : [];
+
+    const combined = [...filteredByGender, ...filteredByEmail];
+    const seenIds = new Set<number>();
+    const result: User[] = [];
+    combined.forEach((user) => {
+      if (!seenIds.has(user.id)) {
+        seenIds.add(user.id);
+        result.push(user);
+      }
+    });
+
+    return result;
   }
 
   getUserById(id: number): User {
@@ -25,11 +49,6 @@ export class UsersService {
 
   createUser(createUserDto: CreateUserDto): User {
     const lastId = this.users[this.users.length - 1]?.id || 0;
-    Object.keys(createUserDto).forEach((key) => {
-      if (!createUserDto[key]) {
-        throw new BadRequestException(`${key} is required`);
-      }
-    });
     const newUser = {
       id: lastId + 1,
       ...createUserDto,

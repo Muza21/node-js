@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { UpdateExpenseDto } from './dto/update-expense.dto';
-import { Expense } from './user.interface';
+import { Expense } from './expense.interface';
 
 @Injectable()
 export class ExpensesService {
@@ -35,8 +35,6 @@ export class ExpensesService {
       ...createExpenseDto,
       totalPrice: createExpenseDto.price * createExpenseDto.quantity,
     };
-    console.log(newExpense);
-    console.log('herer');
     this.expenses.push(newExpense);
     return newExpense;
   }

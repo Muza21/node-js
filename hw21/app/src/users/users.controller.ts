@@ -6,17 +6,19 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserQueryDto } from './dto/user-query.dto';
 
 @Controller('/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Get()
-  getAllUsers() {
-    return this.usersService.getAllUsers();
+  getAllUsers(@Query() query: UserQueryDto) {
+    return this.usersService.getAllUsers(query);
   }
 
   @Get(':id')
