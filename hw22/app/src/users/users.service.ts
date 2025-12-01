@@ -12,10 +12,13 @@ export class UsersService {
   private users: User[] = [];
 
   getAllUsers(query?: { gender?: string; email?: string }): User[] {
-    if (!query || Object.keys(query).length === 0) {
+    const { gender, email } = query || {};
+    const hasFilter =
+      (typeof gender === 'string' && gender.trim() !== '') ||
+      (typeof email === 'string' && email.trim() !== '');
+    if (!hasFilter) {
       return this.users;
     }
-    const { gender, email } = query;
     const filteredByGender = gender
       ? this.users.filter((u) => u.gender === gender)
       : [];
@@ -49,9 +52,14 @@ export class UsersService {
 
   createUser(createUserDto: CreateUserDto): User {
     const lastId = this.users[this.users.length - 1]?.id || 0;
+    const subscriptionStartDate = new Date();
+    const subscriptionEndDate = new Date(subscriptionStartDate);
+    subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + 1);
     const newUser = {
       id: lastId + 1,
       ...createUserDto,
+      subscriptionStartDate,
+      subscriptionEndDate,
     };
     this.users.push(newUser);
     return newUser;
@@ -88,5 +96,25 @@ export class UsersService {
       throw new NotFoundException('user not found');
     }
     this.users.splice(index, 1);
+  }
+
+  findByEmail(email: string) {
+    return this.users.find(
+      (u) => u.email.toLowerCase() === email.toLowerCase(),
+    );
+  }
+
+  upgradeSubscription(email: string): User {
+    if (!email) {
+      throw new BadRequestException('email is required');
+    }
+    const user = this.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('user not found');
+    }
+    const currentEndDate = new Date(user.subscriptionEndDate);
+    currentEndDate.setMonth(currentEndDate.getMonth() + 1);
+    user.subscriptionEndDate = currentEndDate;
+    return user;
   }
 }

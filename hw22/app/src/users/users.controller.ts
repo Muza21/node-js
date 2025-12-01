@@ -40,4 +40,10 @@ export class UsersController {
   deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(Number(id));
   }
+
+  @Post('upgrade-subscription')
+  upgradeSubscription(@Body('email') email: string) {
+    console.log(email);
+    return this.usersService.upgradeSubscription(email);
+  }
 }
