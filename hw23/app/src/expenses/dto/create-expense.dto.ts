@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsNumber, Min, IsIn } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  Min,
+  IsIn,
+  IsMongoId,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { KNOW_CATEGORIES } from '../expense.contants';
 
@@ -21,4 +28,8 @@ export class CreateExpenseDto {
   @IsNumber()
   @Min(0.01)
   price: number;
+
+  @IsNotEmpty()
+  @IsMongoId()
+  user: string;
 }

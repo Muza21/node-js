@@ -6,115 +6,86 @@ import {
 import { User } from './user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [];
+  constructor(@InjectModel('user') private readonly userModel: Model<User>) {}
+  async getAllUsers(query?: { gender?: string; email?: string }) {
+    const filter: Record<string, any> = {};
 
-  getAllUsers(query?: { gender?: string; email?: string }): User[] {
-    const { gender, email } = query || {};
-    const hasFilter =
-      (typeof gender === 'string' && gender.trim() !== '') ||
-      (typeof email === 'string' && email.trim() !== '');
-    if (!hasFilter) {
-      return this.users;
-    }
-    const filteredByGender = gender
-      ? this.users.filter((u) => u.gender === gender)
-      : [];
+    const gender = query?.gender?.trim();
+    if (gender) filter.gender = gender;
 
-    const filteredByEmail = email
-      ? this.users.filter((u) =>
-          u.email.toLowerCase().startsWith(email.toLowerCase()),
-        )
-      : [];
+    const email = query?.email?.trim();
+    if (email) filter.email = new RegExp(`^${email}`, 'i');
 
-    const combined = [...filteredByGender, ...filteredByEmail];
-    const seenIds = new Set<number>();
-    const result: User[] = [];
-    combined.forEach((user) => {
-      if (!seenIds.has(user.id)) {
-        seenIds.add(user.id);
-        result.push(user);
-      }
-    });
-
-    return result;
+    return this.userModel.find(filter).lean();
   }
 
-  getUserById(id: number): User {
-    const user = this.users.find((u) => u.id === id);
-    if (!user) {
-      throw new NotFoundException('user not found');
-    }
+  async getUserById(id: string) {
+    const user = await this.userModel.findById(id).lean();
+    if (!user) throw new NotFoundException('user not found');
     return user;
   }
 
-  createUser(createUserDto: CreateUserDto): User {
-    const lastId = this.users[this.users.length - 1]?.id || 0;
+  async createUser(createUserDto: CreateUserDto) {
+    const exists = await this.userModel
+      .findOne({ email: createUserDto.email })
+      .lean();
+    if (exists) throw new BadRequestException('user already exists');
+
     const subscriptionStartDate = new Date();
     const subscriptionEndDate = new Date(subscriptionStartDate);
     subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + 1);
-    const newUser = {
-      id: lastId + 1,
+
+    const created = await this.userModel.create({
       ...createUserDto,
       subscriptionStartDate,
       subscriptionEndDate,
-    };
-    this.users.push(newUser);
-    return newUser;
+    });
+
+    return created;
   }
 
-  updateUser(id: number, updateUserDto: UpdateUserDto) {
-    const index = this.users.findIndex((u) => u.id === id);
-    if (index === -1) {
-      throw new NotFoundException('user not found');
-    }
-    if (!updateUserDto) {
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    if (!updateUserDto || Object.keys(updateUserDto).length === 0) {
       throw new BadRequestException('No update data provided');
     }
-    const updateReq = {};
-    if (updateUserDto.firstName)
-      updateReq['firstName'] = updateUserDto.firstName;
-    if (updateUserDto.lastName) updateReq['lastName'] = updateUserDto.lastName;
-    if (updateUserDto.email) updateReq['email'] = updateUserDto.email;
-    if (updateUserDto.phoneNumber)
-      updateReq['phoneNumber'] = updateUserDto.phoneNumber;
-    if (updateUserDto.gender) updateReq['gender'] = updateUserDto.gender;
 
-    this.users[index] = {
-      ...this.users[index],
-      ...updateReq,
-    };
+    const updated = await this.userModel
+      .findByIdAndUpdate(id, { $set: updateUserDto }, { new: true })
+      .lean();
 
-    return this.users[index];
+    if (!updated) throw new NotFoundException('user not found');
+    return updated;
   }
 
-  deleteUser(id: number) {
-    const index = this.users.findIndex((u) => u.id === id);
-    if (index === -1) {
-      throw new NotFoundException('user not found');
-    }
-    this.users.splice(index, 1);
+  async deleteUser(id: string) {
+    const deleted = await this.userModel.findByIdAndDelete(id).lean();
+    if (!deleted) throw new NotFoundException('user not found');
+    return deleted;
   }
 
-  findByEmail(email: string) {
-    return this.users.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase(),
-    );
+  async findByEmail(email: string) {
+    return this.userModel.findOne({ email: email.toLowerCase().trim() }).lean();
   }
 
-  upgradeSubscription(email: string): User {
-    if (!email) {
-      throw new BadRequestException('email is required');
-    }
-    const user = this.findByEmail(email);
-    if (!user) {
-      throw new NotFoundException('user not found');
-    }
+  async upgradeSubscription(email: string) {
+    if (!email) throw new BadRequestException('email is required');
+
+    const user = await this.userModel.findOne({
+      email: email.toLowerCase().trim(),
+    });
+    if (!user) throw new NotFoundException('user not found');
+
     const currentEndDate = new Date(user.subscriptionEndDate);
     currentEndDate.setMonth(currentEndDate.getMonth() + 1);
+
     user.subscriptionEndDate = currentEndDate;
-    return user;
+    await user.save();
+
+    return user.toObject();
   }
 }

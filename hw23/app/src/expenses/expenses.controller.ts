@@ -13,18 +13,20 @@ import { UpdateExpenseDto } from './dto/update-expense.dto';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { QueryParamsDTO } from './dto/pagination.dto';
 import { ExpenseQueryDTO } from './dto/expense-query.dto';
+import { IsValidObjectId } from 'src/common/dto/is-valid-object-id.dto';
 
 @Controller('/expenses')
 export class ExpensesController {
   constructor(private readonly expensesService: ExpensesService) {}
+
   @Get()
   getAllExpenses(@Query() query: ExpenseQueryDTO & QueryParamsDTO) {
     return this.expensesService.getAllExpenses(query);
   }
 
   @Get(':id')
-  getExpenseById(@Param('id') id: string) {
-    return this.expensesService.getExpenseById(Number(id));
+  getExpenseById(@Param() { id }: IsValidObjectId) {
+    return this.expensesService.getExpenseById(id);
   }
 
   @Post()
@@ -34,14 +36,14 @@ export class ExpensesController {
 
   @Patch(':id')
   updateExpense(
-    @Param('id') id: string,
+    @Param() { id }: IsValidObjectId,
     @Body() updateExpenseDto: UpdateExpenseDto,
   ) {
-    return this.expensesService.updateExpense(Number(id), updateExpenseDto);
+    return this.expensesService.updateExpense(id, updateExpenseDto);
   }
 
   @Delete(':id')
-  deleteExpense(@Param('id') id: string) {
-    return this.expensesService.deleteExpense(Number(id));
+  deleteExpense(@Param() { id }: IsValidObjectId) {
+    return this.expensesService.deleteExpense(id);
   }
 }

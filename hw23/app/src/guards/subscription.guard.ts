@@ -6,25 +6,22 @@ import { UsersService } from 'src/users/users.service';
 export class SubscriptionGuard implements CanActivate {
   constructor(private readonly usersService: UsersService) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest<Request>();
     const email = req.headers['email'] as string;
-    if (!email) {
-      req['hasActiveSubscription'] = false;
-      return true;
-    }
 
-    const user = this.usersService.findByEmail(email);
-    if (!user) {
-      req['hasActiveSubscription'] = false;
-      return true;
-    }
+    req['hasActiveSubscription'] = false;
+
+    if (!email) return true;
+
+    const user = await this.usersService.findByEmail(email);
+    if (!user) return true;
 
     const now = new Date();
-    const isActive =
-      new Date(user.subscriptionStartDate) <= now &&
-      new Date(user.subscriptionEndDate) >= now;
-    req['hasActiveSubscription'] = isActive;
+    const start = new Date(user.subscriptionStartDate);
+    const end = new Date(user.subscriptionEndDate);
+
+    req['hasActiveSubscription'] = start <= now && end >= now;
 
     return true;
   }
